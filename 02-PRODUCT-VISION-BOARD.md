@@ -152,6 +152,6 @@ fournissent la preuve que le système corrompu ne peut plus produire.
 
 ## 🚀 Roadmap post-hackathon *(à citer, pas à construire)*
 
-**v2** — les chefs de train comme source prioritaire · **v3** — console d'arbitrage
+**v2** — les agents CFF, à bord comme en gare, comme source prioritaire · **v3** — console d'arbitrage
 pour l'information voyageurs · **v4** — certificat de perturbation automatique pour
 l'indemnisation · **v5** — hors-crise : détection précoce d'anomalies par les pendulaires.

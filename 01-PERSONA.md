@@ -66,8 +66,9 @@ les deux options **avec la même assurance**.
 
 ## Personas secondaires (hors scope v1, cités en roadmap)
 
-- **Marc, chef de train** — capteur de vérité à bord, alimente le système
-- **Sandra, agente de gare** — désengorgée par l'auto-service
+- **Marc, agent CFF** — un seul persona côté CFF, qu'il soit chef de train ou
+  agent de gare : même geste (déclarer ce qu'il voit), même autorité, même console.
+  Capteur de vérité prioritaire, et désengorgé en retour par l'auto-service.
 - **Yann, resp. information voyageurs** — récupère la carte de vérité terrain
 
 ## Explicitement hors scope v1

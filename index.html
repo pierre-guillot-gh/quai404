@@ -82,12 +82,6 @@
   .agentbar .ok{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
     color:#241A00;background:#FFB400;border-radius:5px;padding:3px 6px}
 
-  .roles{display:flex;gap:7px;margin-bottom:18px}
-  .roles button{flex:1;padding:10px 6px;border-radius:10px;background:var(--panel);
-    border:1px solid var(--line);color:var(--muted);font-family:inherit;font-size:12px;
-    font-weight:700;cursor:pointer;transition:.15s}
-  .roles button.on{border-color:#FFB400;color:#FFB400;background:rgba(255,180,0,.08)}
-
   .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px}
   .q.urgent{border-color:#7A5A10;background:linear-gradient(180deg,rgba(255,180,0,.08),transparent)}
   .q .qh{display:flex;align-items:center;gap:11px}
@@ -321,8 +315,8 @@
     </ol>
     <h3 style="margin:22px 0 12px">Vue Agent CFF</h3>
     <p>Basculer en haut sur <b>🦺 Agent CFF</b>. La console montre une <b>file de vérification classée par impact</b> — les trains où le plus de voyageurs attendent, avec la fiabilité la plus basse.</p>
-    <p style="margin-top:10px">Deux gestes d'agent : <b>déclarer la position</b> (sa parole vaut 4 confirmations voyageur → fiabilité à 95 % d'un coup) et <b>⊘ marquer supprimé</b>, l'incident de 08:31 que seul un humain peut trancher.</p>
-    <p style="margin-top:10px">Le sélecteur de rôle bascule entre <b>Chef de train</b> et <b>Agent de gare</b> : même console, même autorité, matricule différent.</p>
+    <p style="margin-top:10px">Deux gestes d'agent : <b>déclarer la position</b> (sa parole vaut 4 confirmations voyageur → le train passe seul en « Vérifié ») et <b>⊘ marquer supprimé</b>, l'incident de 08:31 que seul un humain peut trancher.</p>
+    <p style="margin-top:10px">Un seul persona côté CFF : <b>Agent CFF</b>, qu'il soit à bord ou en gare. Même console, même autorité.</p>
     <p style="margin-top:16px"><b>Le coup de grâce :</b> à l'étape 1, choisir « ce train n'est pas dans la liste » et saisir <b>IC 8</b>. Le voyageur fait apparaître un train que <b>plus aucun système ne connaît</b> — c'est l'incident de 08:47 résolu par la foule.</p>
     <p style="margin-top:12px">Essayer aussi <b>Olten</b> (le train devant elle devient ✅) et <b>Delémont</b> (aucun train confirmé → réponse honnête).</p>
     <div class="dock">
@@ -340,7 +334,7 @@
 
 const state = {
   mode:'voyageur',                       // 'voyageur' | 'agent'
-  agentNom:'M. Schneider', agentMat:'4471', role:'Chef de train',
+  agentNom:'M. Schneider', agentMat:'4471',
   view:'dest', dest:null, q:'', qg:'', groundTruthFired:false, open:{},
   couverture:68, signalements:142, traitees:0,
   report:{step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false},
@@ -357,31 +351,32 @@ const trains = [
   { id:'ir15', ligne:'IR 15', voie:7, heure:'08:58', dansMin:11,
     annonce:'Lucerne', reel:'Berne',
     sources:[
-      {t:'crew', txt:'Chef de train <b>S. Meier</b> a déclaré sa destination', age:240},
-      {t:'pax',  txt:'<b>9 voyageurs</b> à bord confirment la direction Berne', age:95} ] },
+      {t:'agent', txt:'Agent CFF <b>S. Meier</b> a déclaré sa destination', age:240},
+      {t:'pax',   txt:'<b>9 voyageurs</b> à bord confirment la direction Berne', age:95} ] },
 
   { id:'ic5',  ligne:'IC 5',  voie:4, heure:'09:04', dansMin:17,
     annonce:'Genève-Aéroport', reel:'Genève',
     sources:[
-      {t:'crew', txt:'Chef de train <b>A. Rochat</b> : terminus <b>Genève</b>, pas l\'aéroport', age:130},
-      {t:'pax',  txt:'<b>23 voyageurs</b> à bord confirment Genève', age:40},
-      {t:'pax',  txt:'<b>6 voyageurs</b> descendus à Morges confirment le parcours', age:310} ] },
+      {t:'pax', txt:'<b>23 voyageurs</b> à bord signalent un terminus à <b>Genève</b>', age:40},
+      {t:'pax', txt:'<b>6 voyageurs</b> descendus à Morges confirment le parcours', age:310},
+      {t:'pax', txt:'<b>4 voyageurs</b> signalent aucune desserte de l\'aéroport', age:520} ] },
 
   { id:'ir90', ligne:'IR 90', voie:1, heure:'08:55', dansMin:8,
     annonce:'Sion', reel:'Sion',
     sources:[
-      {t:'crew', txt:'Chef de train <b>L. Fournier</b> a déclaré sa destination', age:75} ] },
+      {t:'agent', txt:'Agent CFF <b>L. Fournier</b> a déclaré sa destination', age:75} ] },
 
   { id:'ic6',  ligne:'IC 6',  voie:9, heure:'09:12', dansMin:25,
     annonce:'Bâle CFF', reel:'Bâle CFF',
     sources:[
-      {t:'pax',  txt:'<b>11 voyageurs</b> à bord confirment Bâle', age:200} ] },
+      {t:'pax', txt:'<b>1 voyageur</b> à bord indique Bâle', age:410} ] },
 
   { id:'s3',   ligne:'S 3',   voie:2, heure:'08:51', dansMin:4,
     annonce:'Yverdon-les-Bains', reel:'Palézieux',
     sources:[
-      {t:'pax',  txt:'<b>7 voyageurs</b> signalent un départ vers <b>Palézieux</b>', age:55},
-      {t:'crew', txt:'Chef de train <b>R. Bolle</b> confirme Palézieux', age:150} ] },
+      {t:'pax',   txt:'<b>7 voyageurs</b> signalent un départ vers <b>Palézieux</b>', age:55},
+      {t:'pax',   txt:'<b>3 voyageurs</b> confirment depuis le quai', age:220},
+      {t:'agent', txt:'Agent CFF <b>R. Bolle</b> confirme Palézieux', age:150} ] },
 
   { id:'re22', ligne:'RE 22', voie:5, heure:'08:52', dansMin:5,
     annonce:'Fribourg', reel:null,
@@ -404,15 +399,15 @@ const DESTS = [
 
 /* ---------- confiance ---------- */
 
-/* Poids : un agent CFF authentifié fait autorité à lui seul, une déclaration
-   du personnel de bord vaut deux confirmations voyageur, et la donnée système
-   corrompue ne compte pour rien. */
-const POIDS = {agent:4, crew:2, pax:1, sys:0};
+/* Poids : un agent CFF authentifié — à bord ou en gare — suffit à vérifier
+   un train. Il faut au moins quatre voyageurs pour atteindre le même niveau.
+   La donnée système, corrompue, ne compte pour rien. */
+const POIDS = {agent:4, pax:1, sys:0};
 
 function confiance(train){
   const poids = train.sources.reduce((s, x) => s + POIDS[x.t], 0);
   if(poids === 0) return 0.31;
-  return Math.min(0.95, 0.52 + 0.13 * poids);
+  return Math.min(0.95, 0.45 + 0.12 * poids);
 }
 
 function palier(c){
@@ -465,9 +460,7 @@ function ago(sec){
   if(sec < 45) return "à l'instant";
   return 'il y a ' + Math.round(sec/60) + ' min';
 }
-function srcIcon(t){
-  return t === 'agent' ? '🦺' : t === 'crew' ? '🎫' : t === 'pax' ? '👥' : '🖥️';
-}
+function srcIcon(t){ return t === 'agent' ? '🦺' : t === 'pax' ? '👥' : '🖥️'; }
 
 /* Nombre de voyageurs en attente d'info sur un train donné — sert à
    prioriser la file de travail de l'agent par impact réel. */
@@ -670,9 +663,9 @@ function legendHtml(){
   return `
     <div class="legend">
       <div class="lt">Lire la fiabilité</div>
-      <div class="lr">${iconeConfiance(0.92)}<b style="color:#16C784">Vérifié</b> · ≥ 85 % — plusieurs sources terrain concordantes</div>
-      <div class="lr">${iconeConfiance(0.7)}<b style="color:#9ED64A">Probable</b> · 60–84 % — une source terrain récente</div>
-      <div class="lr">${iconeConfiance(0.45)}<b style="color:#F5A623">Faible</b> · 35–59 % — source ancienne ou isolée</div>
+      <div class="lr">${iconeConfiance(0.92)}<b style="color:#16C784">Vérifié</b> · ≥ 85 % — un agent CFF, ou 4 voyageurs concordants</div>
+      <div class="lr">${iconeConfiance(0.7)}<b style="color:#9ED64A">Probable</b> · 60–84 % — 2 à 3 voyageurs concordants</div>
+      <div class="lr">${iconeConfiance(0.45)}<b style="color:#F5A623">Faible</b> · 35–59 % — un seul signalement voyageur</div>
       <div class="lr">${iconeConfiance(0.2)}<b style="color:#6B7488">Non vérifié</b> · &lt; 35 % — donnée système uniquement</div>
     </div>`;
 }
@@ -696,14 +689,9 @@ function viewAgent(){
       <span class="av">🦺</span>
       <span>
         <div class="nm">${state.agentNom}</div>
-        <div class="rl">${state.role} · matricule ${state.agentMat}</div>
+        <div class="rl">Agent CFF · matricule ${state.agentMat} · Lausanne</div>
       </span>
       <span class="ok">authentifié</span>
-    </div>
-
-    <div class="roles">
-      ${['Chef de train','Agent de gare'].map(r =>
-        `<button class="${state.role === r ? 'on' : ''}" onclick="setRole('${r}')">${r}</button>`).join('')}
     </div>
 
     <h1 style="margin-top:0">File de vérification</h1>
@@ -908,13 +896,6 @@ function cancelReport(){ go(state.report.from); }
 
 /* --- actions agent --- */
 
-function setRole(r){
-  state.role = r;
-  state.agentNom = r === 'Agent de gare' ? 'S. Perrin' : 'M. Schneider';
-  state.agentMat = r === 'Agent de gare' ? '2208' : '4471';
-  render();
-}
-
 /* L'agent connaît déjà le train : on entre directement à l'étape 2. */
 function agentDeclare(id){
   state.report = {step:2, trainId:id, gare:null, touches:0, from:'agent', asAgent:true};
@@ -935,7 +916,7 @@ function agentSupprime(id){
   t.supprime = true;
   t.sources.unshift({
     t:'agent', age:0, mine:true,
-    txt:`<b>${state.agentNom}</b> (${state.role}) : ce train est <b>supprimé</b>`
+    txt:`Agent CFF <b>${state.agentNom}</b> : ce train est <b>supprimé</b>`
   });
   state.signalements++; state.traitees++;
   state.couverture = Math.min(97, state.couverture + 3);
@@ -979,7 +960,7 @@ function submitReport(terminus){
   t.position = r.gare;
   t.sources.unshift( r.asAgent
     ? { t:'agent', age:0, mine:true,
-        txt:`<b>${state.agentNom}</b> (${state.role}) : train à <b>${r.gare}</b>`
+        txt:`Agent CFF <b>${state.agentNom}</b> : train à <b>${r.gare}</b>`
             + (terminus ? ` · terminus <b>${terminus}</b>` : '') }
     : { t:'pax', age:0, mine:true,
         txt:`<b>Vous</b> : ce train est à <b>${r.gare}</b>`
@@ -1007,7 +988,7 @@ function fireGroundTruth(){
     state.groundTruthFired = false;
   } else {
     front.sources.unshift(
-      {t:'crew', scenario:true, age:0, txt:'Chef de train <b>M. Schneider</b> : ce train est à <b>Olten</b>'},
+      {t:'agent', scenario:true, age:0, txt:'Agent CFF <b>M. Schneider</b> : ce train est à <b>Olten</b>'},
       {t:'pax',  scenario:true, age:0, txt:'<b>14 voyageurs</b> à bord signalent Olten'}
     );
     state.groundTruthFired = true;
@@ -1043,7 +1024,7 @@ function resetDemo(){
   });
   state.groundTruthFired = false;
   state.couverture = 68; state.signalements = 142; state.traitees = 0;
-  state.mode = 'voyageur'; state.role = 'Chef de train';
+  state.mode = 'voyageur';
   state.agentNom = 'M. Schneider'; state.agentMat = '4471';
   state.dest = null; state.q = ''; state.qg = ''; state.open = {};
   state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false};

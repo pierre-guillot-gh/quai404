@@ -62,13 +62,14 @@
     background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:3px;
   }
   .modetoggle button{
-    flex:1;padding:11px 8px;border:0;border-radius:10px;background:transparent;
-    color:var(--muted);font-family:inherit;font-size:13px;font-weight:800;letter-spacing:-.2px;
-    cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;
+    flex:1;padding:11px 5px;border:0;border-radius:10px;background:transparent;
+    color:var(--muted);font-family:inherit;font-size:12px;font-weight:800;letter-spacing:-.3px;
+    cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:5px;
   }
   .modetoggle button:hover{color:var(--txt)}
   .modetoggle button.on{background:var(--red);color:#fff}
   .modetoggle button.agent.on{background:#FFB400;color:#241A00}
+  .modetoggle button.pari.on{background:#7C3AED;color:#fff}
 
   /* ---------- console agent ---------- */
   .agentbar{
@@ -100,6 +101,60 @@
     color:#241A00;background:#FFB400;border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px}
   .badge-supp{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
     color:#FFB3B8;border:1px solid #6B1B1B;background:#2A0B0B;border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+
+  /* ---------- paris ---------- */
+  .wallet{
+    display:flex;align-items:center;gap:12px;border:1px solid #4A2E78;border-radius:14px;
+    background:linear-gradient(135deg,rgba(139,92,246,.18),transparent);padding:13px;margin-bottom:13px;
+  }
+  .wallet .av{width:40px;height:40px;border-radius:11px;background:#7C3AED;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+  .wallet .nm{font-size:19px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+  .wallet .rl{font-size:11px;color:var(--muted);margin-top:3px}
+  .wallet .sr{margin-left:auto;text-align:right}
+  .wallet .sr b{display:block;font-size:17px;font-weight:800;color:#C9A6FF;font-variant-numeric:tabular-nums}
+  .wallet .sr i{display:block;font-size:9px;font-style:normal;color:var(--muted);font-weight:800;
+    letter-spacing:.7px;text-transform:uppercase;margin-top:2px}
+
+  .mises{display:flex;gap:7px;margin-bottom:4px}
+  .mises button{
+    flex:1;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:var(--panel);
+    color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:800;cursor:pointer;transition:.15s;
+  }
+  .mises button:hover{color:var(--txt);border-color:#4A2E78}
+  .mises button.on{background:#7C3AED;border-color:#7C3AED;color:#fff}
+
+  .mkt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px}
+  .mkt .mq{font-size:14.5px;font-weight:700;letter-spacing:-.3px;line-height:1.35}
+  .mkt .ms{font-size:11.5px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:6px}
+  .split{display:flex;height:6px;border-radius:99px;overflow:hidden;margin:13px 0 6px;background:#252C3E}
+  .split i{display:block;height:100%}
+  .splitl{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--muted)}
+  .odds{display:flex;gap:8px;margin-top:11px}
+  .odds button{
+    flex:1;padding:10px 8px;border-radius:11px;border:1px solid var(--line);background:var(--panel-2);
+    color:var(--txt);font-family:inherit;cursor:pointer;transition:.15s;text-align:center;
+  }
+  .odds button b{display:block;font-size:12px;font-weight:800;letter-spacing:1px}
+  .odds button span{display:block;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+  .odds .yes:hover{border-color:var(--ok);color:var(--ok)}
+  .odds .no:hover{border-color:var(--no);color:var(--no)}
+  .odds button:disabled{opacity:.35;cursor:not-allowed}
+  .placed{
+    margin-top:11px;border:1px solid #4A2E78;background:#160E27;border-radius:11px;padding:11px;
+    font-size:12.5px;line-height:1.45;display:flex;align-items:flex-start;gap:9px;
+  }
+  .placed b{color:#C9A6FF;font-weight:800}
+
+  .bet{
+    display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:12px;margin-bottom:8px;font-size:13.5px;
+  }
+  .bet.win{border-color:#146B4E;background:linear-gradient(180deg,rgba(22,199,132,.09),transparent)}
+  .bet.lose{border-color:#5A1620}
+  .bet .bt{flex:1;min-width:0}
+  .bet .bs{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .bet .br{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:15px}
 
   /* ---------- scroll area ---------- */
   .screen{flex:1 1 auto;overflow-y:auto;padding:6px 20px 24px;scrollbar-width:none}
@@ -273,6 +328,8 @@
   .legend .lr{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);margin-bottom:7px}
   .legend .lr b{font-weight:800}
   .legend .lr:last-child{margin-bottom:0}
+  .legend.why .lr{align-items:flex-start;line-height:1.5;margin-bottom:11px;gap:10px}
+  .legend.why .lr>span:first-child{flex:0 0 16px}
 
   /* ---------- presenter notes ---------- */
   .notes{width:330px;max-width:90vw;color:var(--muted);font-size:13px;line-height:1.6}
@@ -317,6 +374,14 @@
     <p>Basculer en haut sur <b>🦺 Agent CFF</b>. La console montre une <b>file de vérification classée par impact</b> — les trains où le plus de voyageurs attendent, avec la fiabilité la plus basse.</p>
     <p style="margin-top:10px">Deux gestes d'agent : <b>déclarer la position</b> (sa parole vaut 4 confirmations voyageur → le train passe seul en « Vérifié ») et <b>⊘ marquer supprimé</b>, l'incident de 08:31 que seul un humain peut trancher.</p>
     <p style="margin-top:10px">Un seul persona côté CFF : <b>Agent CFF</b>, qu'il soit à bord ou en gare. Même console, même autorité.</p>
+    <h3 style="margin:22px 0 12px">Vue Pari</h3>
+    <p>Basculer sur <b>🎲 Pari</b>. Un seul marché par train : <b>« ira-t-il vraiment là où il l'annonce ? »</b>
+    Miser <b>NON</b> sur l'IC 1 → Berne, puis <span class="kbd">espace</span> : la confirmation terrain
+    dénoue le marché <b>sous les yeux du jury</b> et le pari est payé.</p>
+    <p style="margin-top:10px"><b>L'argument, pas le gadget :</b> la répartition des mises est un
+    <b>signal d'incertitude</b> disponible avant toute confirmation. Et le parieur <i>veut</i> la
+    vérité — il devient le contributeur du train suivant. Un agent CFF, lui, ne parie pas : il tranche.</p>
+
     <p style="margin-top:16px"><b>Le coup de grâce :</b> à l'étape 1, choisir « ce train n'est pas dans la liste » et saisir <b>IC 8</b>. Le voyageur fait apparaître un train que <b>plus aucun système ne connaît</b> — c'est l'incident de 08:47 résolu par la foule.</p>
     <p style="margin-top:12px">Essayer aussi <b>Olten</b> (le train devant elle devient ✅) et <b>Delémont</b> (aucun train confirmé → réponse honnête).</p>
     <div class="dock">
@@ -333,11 +398,12 @@
    ------------------------------------------------------------------ */
 
 const state = {
-  mode:'voyageur',                       // 'voyageur' | 'agent'
+  mode:'voyageur',                       // 'voyageur' | 'agent' | 'pari'
   agentNom:'M. Schneider', agentMat:'4471',
   view:'dest', dest:null, q:'', qg:'', groundTruthFired:false, open:{},
   couverture:68, signalements:142, traitees:0,
-  report:{step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false},
+  jetons:250, mise:25, paris:[], serie:0,
+  report:{step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false, jetons:0},
 };
 
 /* Trains en gare de Lausanne.
@@ -482,25 +548,32 @@ function sourcesHtml(train){
 /* ---------- écrans ---------- */
 
 function render(){
+  /* Les marchés se dénouent sur l'état courant des données, quel que
+     soit l'écran d'où la confirmation terrain est arrivée. */
+  resoudreParis();
   document.getElementById('screen').innerHTML =
-    ({dest:viewDest, quai:viewQuai, agent:viewAgent, report:viewReport, thanks:viewThanks})[state.view]();
+    ({dest:viewDest, quai:viewQuai, agent:viewAgent, pari:viewPari,
+      report:viewReport, thanks:viewThanks})[state.view]();
   renderToggle();
   syncDock();
 }
 
-/* Bascule Voyageur / Agent CFF — toujours visible, hors zone de défilement. */
+const TAGLINE = {voyageur:'La vérité du quai', agent:'Console agent · réseau romand',
+                 pari:'Marchés de quai · jetons virtuels'};
+
+/* Bascule Voyageur / Agent CFF / Pari — toujours visible, hors défilement. */
 function renderToggle(){
   document.getElementById('modetoggle').innerHTML = `
     <button class="${state.mode === 'voyageur' ? 'on' : ''}" onclick="setMode('voyageur')">🧳 Voyageur</button>
-    <button class="agent ${state.mode === 'agent' ? 'on' : ''}" onclick="setMode('agent')">🦺 Agent CFF</button>`;
-  document.getElementById('tagline').textContent =
-    state.mode === 'agent' ? 'Console agent · réseau romand' : 'La vérité du quai';
+    <button class="agent ${state.mode === 'agent' ? 'on' : ''}" onclick="setMode('agent')">🦺 Agent CFF</button>
+    <button class="pari ${state.mode === 'pari' ? 'on' : ''}" onclick="setMode('pari')">🎲 Pari</button>`;
+  document.getElementById('tagline').textContent = TAGLINE[state.mode];
 }
 
 function setMode(m){
   if(state.mode === m && state.view !== 'report' && state.view !== 'thanks') return;
   state.mode = m;
-  state.view = m === 'agent' ? 'agent' : (state.dest ? 'quai' : 'dest');
+  state.view = m === 'voyageur' ? (state.dest ? 'quai' : 'dest') : m;
   render();
 }
 
@@ -755,6 +828,158 @@ function queueRow(x, urgent){
 }
 
 /* ==================================================================
+   PARI — l'attente gamifiée.
+   Un voyageur immobilisé parie sur la seule chose que le système ne
+   garantit plus : « ce train ira-t-il vraiment où il l'annonce ? »
+   Jetons virtuels, aucune valeur monétaire. Le marché se dénoue dès
+   qu'une source terrain tranche — donc le parieur veut la vérité.
+   ================================================================== */
+
+/* Part des mises placées sur OUI, par train. Mockée. */
+const FOULE = {ic1:0.28, re22:0.46, ic21:0.57, ir15:0.30, ic5:0.34, ir90:0.78, ic6:0.41, s3:0.26};
+function foule(t){ return FOULE[t.id] != null ? FOULE[t.id] : 0.5; }
+
+/* Cote = inverse de la probabilité implicite, 8 % de marge. */
+function cote(p){ return Math.max(1.05, Math.round((0.92 / p) * 100) / 100); }
+
+/* Un marché reste ouvert tant qu'aucune source terrain ne l'a tranché :
+   la donnée système seule ne dénoue rien, exactement comme dans l'app. */
+function issue(t){
+  if(t.supprime) return 'non';
+  if(t.reel && t.sources.some(s => s.t !== 'sys')) return t.reel === t.annonce ? 'oui' : 'non';
+  return null;
+}
+
+function resoudreParis(){
+  state.paris.forEach(b => {
+    if(b.statut !== 'open') return;
+    const r = issue(trainById(b.trainId));
+    if(!r) return;
+    b.statut = r === b.side ? 'gagne' : 'perdu';
+    b.gain   = b.statut === 'gagne' ? Math.round(b.mise * b.cote) : 0;
+    if(b.statut === 'gagne'){ state.jetons += b.gain; state.serie++; }
+    else state.serie = 0;
+  });
+}
+
+function viewPari(){
+  const ouverts = trains.filter(t => t.annonce && !issue(t));
+  const clos    = trains.filter(t => t.annonce &&  issue(t));
+  const justes  = clos.filter(t => (foule(t) >= 0.5 ? 'oui' : 'non') === issue(t)).length;
+  const engage  = state.paris.filter(b => b.statut === 'open').reduce((s,b) => s + b.mise, 0);
+
+  return `
+    <div class="wallet">
+      <span class="av">🎲</span>
+      <span>
+        <div class="nm">${state.jetons} jetons</div>
+        <div class="rl">${engage ? engage + ' engagés · ' : ''}jetons virtuels, sans valeur monétaire</div>
+      </span>
+      <span class="sr"><b>${state.serie}</b><i>série</i></span>
+    </div>
+
+    <h1 style="margin-top:0">Pariez pendant<br>que vous attendez</h1>
+    <p class="sub">Le système ne sait plus où vont les trains. Vous, vous avez une intuition.
+    Misez dessus : le marché se dénoue dès qu'une <b style="color:var(--txt)">confirmation
+    terrain</b> arrive — et pas avant.</p>
+
+    <div class="sect" style="margin-top:6px">Votre mise</div>
+    <div class="mises">${[10,25,50].map(m =>
+      `<button class="${state.mise === m ? 'on' : ''}" onclick="setMise(${m})">${m}</button>`).join('')}</div>
+
+    <div class="sect">Marchés ouverts · ${ouverts.length}</div>
+    ${ ouverts.length
+      ? ouverts.map(mktCard).join('')
+      : `<div class="empty">Tous les trains en gare ont été tranchés par le terrain.
+           Revenez au prochain départ.</div>` }
+
+    ${ state.paris.length
+      ? `<div class="sect">Vos paris · ${state.paris.length}</div>${state.paris.map(betRow).join('')}`
+      : '' }
+
+    <button class="cta" onclick="startReport()">
+      <span class="em">🚊</span>
+      <span>
+        <span class="t1">Je suis dans un train en gare</span>
+        <span class="t2">Trancher un marché rapporte <b style="color:#C9A6FF">jusqu'à 20 jetons</b>
+          — même quand vous perdez votre pari.</span>
+      </span>
+      <span class="arw">→</span>
+    </button>
+
+    <div class="legend why">
+      <div class="lt">Pourquoi un jeu ?</div>
+      <div class="lr"><span>⏳</span><span>Huit minutes d'attente sont huit minutes vides.
+        Le pari les occupe, et garde le voyageur dans l'app à l'instant précis où il en a besoin.</span></div>
+      <div class="lr"><span>📊</span><span>La répartition des mises est un <b>signal d'incertitude</b>
+        disponible <b>avant</b> la première confirmation terrain. Ce matin, la foule a eu raison
+        <b>${justes} fois sur ${clos.length}</b>.</span></div>
+      <div class="lr"><span>🎯</span><span>Qui a misé <b>veut</b> savoir. Le parieur devient
+        le contributeur du train suivant — c'est le moteur de la couverture réseau.</span></div>
+      <div class="lr"><span>🦺</span><span>Un agent CFF ne parie pas : il tranche.
+        Cette séparation est ce qui garde le signal honnête.</span></div>
+    </div>`;
+}
+
+function mktCard(t){
+  const pOui = foule(t), pNon = 1 - pOui;
+  const mine = state.paris.find(b => b.trainId === t.id && b.statut === 'open');
+  const v = verdict(t, null), p = palier(v.conf);
+  const pauvre = state.jetons < state.mise ? 'disabled' : '';
+  return `
+    <div class="mkt">
+      <div class="mq">Le <b>${t.ligne}</b> ira-t-il vraiment à <b>${t.annonce}</b> ?</div>
+      <div class="ms">voie ${t.voie} · ${t.heure} · ${iconeConfiance(v.conf)}
+        <b style="color:${p.col}">${p.nom.toLowerCase()}</b></div>
+      <div class="split">
+        <i style="width:${Math.round(pOui*100)}%;background:var(--ok)"></i>
+        <i style="width:${Math.round(pNon*100)}%;background:var(--no)"></i>
+      </div>
+      <div class="splitl"><span>${Math.round(pOui*100)} % OUI</span><span>${Math.round(pNon*100)} % NON</span></div>
+      ${ mine
+        ? `<div class="placed"><span>🎟️</span><span>Misé <b>${mine.mise} jetons</b> sur
+             <b>${mine.side.toUpperCase()}</b> à <b>×${mine.cote.toFixed(2)}</b> ·
+             gain potentiel <b>${Math.round(mine.mise * mine.cote)}</b>.
+             En attente d'une confirmation terrain.</span></div>`
+        : `<div class="odds">
+             <button class="yes" onclick="parier('${t.id}','oui')" ${pauvre}>
+               <b>OUI</b><span>×${cote(pOui).toFixed(2)}</span></button>
+             <button class="no" onclick="parier('${t.id}','non')" ${pauvre}>
+               <b>NON</b><span>×${cote(pNon).toFixed(2)}</span></button>
+           </div>` }
+    </div>`;
+}
+
+function betRow(b){
+  const t = trainById(b.trainId);
+  const cls = b.statut === 'gagne' ? 'win' : b.statut === 'perdu' ? 'lose' : '';
+  const ic  = b.statut === 'gagne' ? '✅' : b.statut === 'perdu' ? '❌' : '⏳';
+  const col = b.statut === 'gagne' ? 'var(--ok)' : b.statut === 'perdu' ? 'var(--no)' : 'var(--muted)';
+  return `
+    <div class="bet ${cls}">
+      <span style="font-size:17px">${ic}</span>
+      <span class="bt">
+        <div>${t.ligne} → ${t.annonce} · <b>${b.side.toUpperCase()}</b></div>
+        <div class="bs">${b.mise} jetons à ×${b.cote.toFixed(2)}${
+          b.statut === 'open' ? " · en attente du terrain" : ''}</div>
+      </span>
+      <span class="br" style="color:${col}">${
+        b.statut === 'gagne' ? '+' + b.gain : b.statut === 'perdu' ? '−' + b.mise : '…' }</span>
+    </div>`;
+}
+
+function setMise(m){ state.mise = m; render(); }
+
+function parier(id, side){
+  if(state.jetons < state.mise) return;
+  const t = trainById(id);
+  const p = side === 'oui' ? foule(t) : 1 - foule(t);
+  state.jetons -= state.mise;
+  state.paris.unshift({trainId:id, side, mise:state.mise, cote:cote(p), statut:'open', gain:0});
+  render();
+}
+
+/* ==================================================================
    CONTRIBUTION — « Je suis dans le train XYZ et il est à Genève »
    L'utilisateur à bord alimente le jeu de données consulté sur le quai.
    ================================================================== */
@@ -861,9 +1086,22 @@ function viewThanks(){
         </div>
       </div></div>
 
+      ${ state.report.jetons ? `
+        <div class="opt" style="cursor:default"><div class="top">
+          <span class="st">🎲</span>
+          <div class="bd">
+            <div class="t1">+${state.report.jetons} jetons</div>
+            <div class="t2">Trancher un marché est récompensé, quel que soit votre pari.</div>
+          </div>
+        </div></div>` : '' }
+
       ${ state.report.asAgent
         ? `<button class="btn ok" style="background:#FFB400;color:#241A00"
              onclick="go('agent')">Retour à la file de vérification</button>`
+        : state.report.from === 'pari'
+        ? `<button class="btn ok" style="background:#7C3AED;color:#fff"
+             onclick="go('pari')">Retour aux marchés</button>
+           <button class="btn ghost" onclick="startReport()">Signaler un autre train</button>`
         : `<button class="btn ok" onclick="go('${state.dest ? 'quai' : 'dest'}')">
              ${state.dest ? 'Revenir au quai' : 'Où allez-vous ?'}</button>
            <button class="btn ghost" onclick="startReport()">Signaler un autre train</button>` }
@@ -886,8 +1124,9 @@ function enAttente(){
 /* --- parcours de signalement --- */
 
 function startReport(){
-  const from = (state.view === 'quai' || state.dest) ? 'quai' : 'dest';
-  state.report = {step:1, trainId:null, gare:null, touches:0, from, asAgent:false};
+  const from = state.mode === 'pari' ? 'pari'
+             : (state.view === 'quai' || state.dest) ? 'quai' : 'dest';
+  state.report = {step:1, trainId:null, gare:null, touches:0, from, asAgent:false, jetons:0};
   state.qg = '';
   go('report');
 }
@@ -898,13 +1137,13 @@ function cancelReport(){ go(state.report.from); }
 
 /* L'agent connaît déjà le train : on entre directement à l'étape 2. */
 function agentDeclare(id){
-  state.report = {step:2, trainId:id, gare:null, touches:0, from:'agent', asAgent:true};
+  state.report = {step:2, trainId:id, gare:null, touches:0, from:'agent', asAgent:true, jetons:0};
   state.qg = '';
   go('report');
 }
 
 function agentGhost(){
-  state.report = {step:1, trainId:null, gare:null, touches:0, from:'agent', asAgent:true};
+  state.report = {step:1, trainId:null, gare:null, touches:0, from:'agent', asAgent:true, jetons:0};
   state.qg = '';
   go('report');
 }
@@ -973,6 +1212,14 @@ function submitReport(terminus){
   state.couverture = Math.min(97, state.couverture + (r.asAgent ? 6 : 4));
   state.signalements++;
   if(r.asAgent) state.traitees++;
+
+  /* Le voyageur qui tranche un marché est payé pour l'avoir tranché,
+     pas pour avoir eu raison. Un agent, lui, ne touche jamais de jetons. */
+  if(!r.asAgent){
+    r.jetons = terminus ? 20 : 10;
+    state.jetons += r.jetons;
+  }
+
   state.open[t.id] = true;
   go('thanks');
 }
@@ -994,15 +1241,16 @@ function fireGroundTruth(){
     state.groundTruthFired = true;
   }
 
-  /* Le bouton doit être utilisable depuis n'importe quel écran :
-     on amène le présentateur là où l'effet est visible. */
-  if(state.view !== 'quai'){
+  /* Le bouton doit être utilisable depuis n'importe quel écran : on amène
+     le présentateur là où l'effet est visible. Sur l'écran Pari, l'effet
+     est le dénouement du marché — on y reste. */
+  if(state.view !== 'quai' && state.view !== 'pari'){
     if(!state.dest) state.dest = 'Berne';
     state.view = 'quai';
   }
 
   render();
-  const el = document.querySelector('.verdict');
+  const el = document.querySelector('.verdict, .bet');
   if(el) el.animate([{transform:'scale(1)'},{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:420});
 }
 
@@ -1027,7 +1275,8 @@ function resetDemo(){
   state.mode = 'voyageur';
   state.agentNom = 'M. Schneider'; state.agentMat = '4471';
   state.dest = null; state.q = ''; state.qg = ''; state.open = {};
-  state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false};
+  state.jetons = 250; state.mise = 25; state.paris = []; state.serie = 0;
+  state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false, jetons:0};
   go('dest');
 }
 

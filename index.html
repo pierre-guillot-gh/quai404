@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Quai 404 — Ce train va-t-il où vous allez ?</title>
+<style>
+  :root{
+    --bg:#070A10;
+    --panel:#10141F;
+    --panel-2:#161B29;
+    --line:#242B3D;
+    --txt:#EEF1F8;
+    --muted:#8B94AB;
+    --red:#EB0000;
+    --ok:#16C784;
+    --no:#FF3B48;
+    --unk:#F5A623;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1100px 700px at 50% -10%,#151B2B 0%,var(--bg) 60%);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px 16px;min-height:100%;
+  }
+  .stage{display:flex;gap:40px;align-items:center;flex-wrap:wrap;justify-content:center}
+
+  /* ---------- phone shell ---------- */
+  .phone{
+    width:390px;height:820px;max-height:94vh;
+    background:var(--bg);
+    border:1px solid #2A3146;border-radius:42px;
+    box-shadow:0 40px 90px rgba(0,0,0,.65), inset 0 0 0 8px #0B0F18;
+    display:flex;flex-direction:column;overflow:hidden;position:relative;
+  }
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:26px;background:#0B0F18;border-radius:16px;z-index:40}
+  .statusbar{height:44px;flex:0 0 auto;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 4px;font-size:12px;color:var(--muted);letter-spacing:.3px}
+
+  /* ---------- crisis bar ---------- */
+  .crisis{
+    flex:0 0 auto;background:linear-gradient(90deg,#3A0000,#7A0000);
+    border-bottom:1px solid #A31414;
+    padding:8px 16px;display:flex;align-items:center;gap:9px;
+    font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:#FF5A5A;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.7)}}
+
+  /* ---------- brand ---------- */
+  .brand{flex:0 0 auto;padding:14px 20px 6px;display:flex;align-items:baseline;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800;letter-spacing:-.5px}
+  .logo span{color:var(--red)}
+  .logo small{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;margin-top:3px}
+
+  /* ---------- scroll area ---------- */
+  .screen{flex:1 1 auto;overflow-y:auto;padding:6px 20px 24px;scrollbar-width:none}
+  .screen::-webkit-scrollbar{display:none}
+
+  h1{font-size:25px;line-height:1.18;margin:14px 0 6px;letter-spacing:-.6px}
+  .sub{color:var(--muted);font-size:13.5px;line-height:1.5;margin:0 0 16px}
+
+  /* ---------- search ---------- */
+  .search{
+    display:flex;align-items:center;gap:9px;background:var(--panel);
+    border:1px solid var(--line);border-radius:13px;padding:0 13px;margin-bottom:16px;
+  }
+  .search input{
+    flex:1;background:transparent;border:0;outline:0;color:var(--txt);
+    font-size:15.5px;font-family:inherit;padding:14px 0;font-weight:600;
+  }
+  .search input::placeholder{color:#5D6680;font-weight:500}
+
+  /* ---------- destination rows ---------- */
+  .dgroup{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:#5D6680;font-weight:800;margin:16px 0 8px}
+  .drow{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+    background:var(--panel);border:1px solid var(--line);color:var(--txt);
+    padding:13px 14px;border-radius:13px;font-size:15.5px;font-weight:700;cursor:pointer;
+    transition:.15s;margin-bottom:8px;font-family:inherit;letter-spacing:-.2px;
+  }
+  .drow:hover{border-color:var(--red);background:var(--panel-2);transform:translateX(2px)}
+  .drow .meta{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .empty{color:var(--muted);font-size:13.5px;padding:18px 2px;line-height:1.5}
+
+  /* ---------- location ---------- */
+  .loc{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:9px 12px;margin-bottom:14px;
+  }
+  .loc b{color:var(--txt);font-weight:700}
+  .loc .chg{margin-left:auto;color:var(--red);font-weight:700;cursor:pointer;font-size:12px}
+
+  /* ---------- verdict card ---------- */
+  .verdict{
+    border-radius:var(--radius);padding:20px;margin-bottom:14px;
+    border:1px solid var(--line);background:var(--panel);
+    position:relative;overflow:hidden;transition:.45s;
+  }
+  .verdict::before{content:"";position:absolute;inset:0;opacity:.13;transition:.45s;background:var(--c)}
+  .verdict.ok{--c:var(--ok);border-color:var(--ok)}
+  .verdict.no{--c:var(--no);border-color:var(--no)}
+  .verdict.unk{--c:var(--unk);border-color:#4A3A16}
+  .verdict > *{position:relative}
+
+  .vhead{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .countdown{font-variant-numeric:tabular-nums;color:var(--red);font-weight:800;letter-spacing:.5px}
+
+  .vicon{font-size:40px;line-height:1;margin:16px 0 8px}
+  .vtitle{font-size:26px;font-weight:800;letter-spacing:-.8px;line-height:1.1}
+  .verdict.ok .vtitle{color:var(--ok)}
+  .verdict.no .vtitle{color:var(--no)}
+  .verdict.unk .vtitle{color:var(--unk)}
+  .vreal{margin-top:10px;font-size:14px;color:var(--txt)}
+  .vreal b{font-weight:800}
+  .vnote{margin-top:10px;font-size:13.5px;color:var(--muted);line-height:1.5}
+
+  /* ---------- confidence ---------- */
+  .conf{margin-top:18px}
+  .confrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .confrow .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:700}
+  .confrow .tier{margin-left:auto;display:flex;align-items:center;gap:7px}
+  .confrow .tname{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+  .confrow .pct{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .bar{height:7px;border-radius:99px;background:#252C3E;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  svg.cbars{display:block;flex:0 0 auto}
+
+  /* ---------- sources ---------- */
+  .sources{margin-top:16px;border-top:1px solid var(--line);padding-top:13px;display:flex;flex-direction:column;gap:10px}
+  .src{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.35;animation:slidein .5s}
+  @keyframes slidein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  .src .ic{width:20px;text-align:center;flex:0 0 20px}
+  .src .tx{flex:1}
+  .src .tx b{font-weight:700}
+  .src .ag{color:var(--muted);font-variant-numeric:tabular-nums;font-size:11.5px;white-space:nowrap}
+  .src.sys .tx{color:var(--muted)}
+  .badge-unverified{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#FF9A9A;border:1px solid #6B1B1B;background:#2A0B0B;border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+
+  /* ---------- option rows ---------- */
+  .sect{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:22px 0 9px}
+  .opt{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;
+    margin-bottom:9px;cursor:pointer;transition:.15s;
+  }
+  .opt:hover{border-color:#3A445E;background:var(--panel-2)}
+  .opt.best{border-color:var(--ok);background:linear-gradient(180deg,rgba(22,199,132,.09),transparent)}
+  .opt .top{display:flex;gap:12px;align-items:center}
+  .opt .st{font-size:20px;width:24px;text-align:center;flex:0 0 24px}
+  .opt .bd{flex:1;min-width:0}
+  .opt .t1{font-size:14.5px;font-weight:700;letter-spacing:-.2px}
+  .opt .t2{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+  .opt .t2 .pct{font-weight:800;font-variant-numeric:tabular-nums}
+  .opt .rt{text-align:right;flex:0 0 auto}
+  .opt .rt .big{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+  .opt .rt .sm{font-size:11px;color:var(--muted);margin-top:2px}
+  .opt .drawer{margin-top:12px;border-top:1px solid var(--line);padding-top:11px;display:flex;flex-direction:column;gap:9px}
+
+  /* ---------- CTA contribution ---------- */
+  .cta{
+    display:flex;gap:13px;align-items:center;width:100%;text-align:left;
+    background:linear-gradient(135deg,rgba(235,0,0,.16),rgba(235,0,0,.03));
+    border:1px solid #5A1620;border-radius:16px;padding:15px;margin-top:20px;
+    cursor:pointer;font-family:inherit;color:var(--txt);transition:.15s;
+  }
+  .cta:hover{border-color:var(--red);transform:translateY(-1px)}
+  .cta .em{font-size:25px;flex:0 0 auto}
+  .cta .t1{font-size:15px;font-weight:800;letter-spacing:-.3px}
+  .cta .t2{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .cta .arw{margin-left:auto;color:var(--red);font-size:19px;font-weight:800}
+
+  /* ---------- divider + stats ---------- */
+  .divider{display:flex;align-items:center;gap:12px;margin:28px 0 18px;color:#4A5268;font-size:10.5px;font-weight:800;letter-spacing:1.5px}
+  .divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--line)}
+  .stats{display:flex;gap:8px;margin-top:12px}
+  .stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 8px;text-align:center}
+  .stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+  .stat span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-top:4px;line-height:1.3}
+
+  /* ---------- steps ---------- */
+  .steps{display:flex;gap:6px;margin:10px 0 16px}
+  .steps i{flex:1;height:4px;border-radius:99px;background:#252C3E;transition:.3s}
+  .steps i.on{background:var(--red)}
+  .stepno{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:#5D6680;font-weight:800}
+
+  .tinput{
+    width:100%;background:var(--panel);border:1px solid var(--line);border-radius:13px;
+    padding:15px;color:var(--txt);font-size:16px;font-family:inherit;font-weight:700;outline:0;
+  }
+  .tinput:focus{border-color:var(--red)}
+  .badge-ghost{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#C9A6FF;border:1px solid #4A2E78;background:#1B1030;border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+  .badge-mine{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#7EF5C4;border:1px solid #146B4E;background:#062C20;border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+  .posline{font-size:11.5px;color:#9ED64A;margin-top:5px;font-weight:700}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:block;width:100%;padding:16px;border-radius:14px;border:0;cursor:pointer;
+    font-size:15.5px;font-weight:800;letter-spacing:-.2px;margin-top:10px;transition:.15s;
+    font-family:inherit;
+  }
+  .btn.primary{background:var(--red);color:#fff}
+  .btn.primary:hover{background:#FF1A1A}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .btn.ghost:hover{color:var(--txt);border-color:#3A445E}
+  .btn.ok{background:var(--ok);color:#04231A}
+
+  /* ---------- aboard ---------- */
+  .pick{display:flex;flex-direction:column;gap:9px;margin-top:8px}
+  .pick button{
+    text-align:left;padding:15px;border-radius:13px;background:var(--panel);
+    border:1px solid var(--line);color:var(--txt);font-size:15px;font-weight:600;cursor:pointer;
+    font-family:inherit;transition:.15s;display:flex;justify-content:space-between;align-items:center;
+  }
+  .pick button:hover{border-color:var(--ok);background:var(--panel-2)}
+  .pick button small{color:var(--muted);font-weight:500;font-size:11.5px}
+
+  .hero-num{font-size:62px;font-weight:800;letter-spacing:-3px;color:var(--ok);line-height:1;margin:10px 0 4px}
+
+  /* ---------- legend ---------- */
+  .legend{margin-top:20px;border:1px solid var(--line);border-radius:13px;padding:13px 14px;background:var(--panel)}
+  .legend .lt{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:#5D6680;font-weight:800;margin-bottom:10px}
+  .legend .lr{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);margin-bottom:7px}
+  .legend .lr b{font-weight:800}
+  .legend .lr:last-child{margin-bottom:0}
+
+  /* ---------- presenter notes ---------- */
+  .notes{width:330px;max-width:90vw;color:var(--muted);font-size:13px;line-height:1.6}
+  .notes h3{color:var(--txt);font-size:12px;letter-spacing:1.4px;text-transform:uppercase;margin:0 0 14px}
+  .notes ol{padding-left:18px;margin:0}
+  .notes li{margin-bottom:13px}
+  .notes b{color:var(--txt)}
+  .kbd{display:inline-block;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:1px 6px;font-size:11px;color:var(--txt);font-weight:700}
+  .dock{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap}
+  .dock button{
+    background:var(--panel);border:1px solid var(--line);color:var(--txt);
+    padding:9px 13px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;
+  }
+  .dock button:hover{border-color:var(--red)}
+  @media(max-width:880px){.notes{display:none}}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span id="clock">08:47</span><span>▮▮▮ ◗ 34%</span></div>
+    <div class="crisis"><span class="dot"></span><span>Perturbation majeure · réseau national</span></div>
+    <div class="brand">
+      <div class="logo">QUAI <span>404</span><small>La vérité du quai</small></div>
+    </div>
+    <div class="screen" id="screen"></div>
+  </div>
+
+  <div class="notes">
+    <h3>Déroulé de démo — 90 s</h3>
+    <ol>
+      <li><b>Chercher « Berne ».</b> Nadia est voie 3, un train est devant elle, les portes ferment dans 40 s.</li>
+      <li><b>Verdict initial : ❓ INCONNU.</b> Le moment clé du pitch : <i>« l'app a le droit de dire je ne sais pas »</i>. La donnée système est affichée, mais tamponnée NON VÉRIFIÉ.</li>
+      <li>Appuyer sur <span class="kbd">espace</span> → la vérité arrive du terrain. Le verdict bascule en <b>⛔ INFIRMÉ</b>, la jauge passe de <b>31 %</b> à <b>91 %</b> et l'icône de fiabilité passe au vert.</li>
+      <li>Nadia ne monte pas. L'app lui donne la <b>meilleure option confirmée</b> : IR 15, voie 7, <b>91 %</b>. Toucher une ligne déplie ses sources.</li>
+      <li><b>« Je suis dans un train en gare »</b> → 3 étapes : quel train, où il est, où il va. L'envoi <b>écrit réellement dans le jeu de données</b> — la fiabilité du train remonte sous les yeux du jury.</li>
+    </ol>
+    <p style="margin-top:16px"><b>Le coup de grâce :</b> à l'étape 1, choisir « ce train n'est pas dans la liste » et saisir <b>IC 8</b>. Le voyageur fait apparaître un train que <b>plus aucun système ne connaît</b> — c'est l'incident de 08:47 résolu par la foule.</p>
+    <p style="margin-top:12px">Essayer aussi <b>Olten</b> (le train devant elle devient ✅) et <b>Delémont</b> (aucun train confirmé → réponse honnête).</p>
+    <div class="dock">
+      <button id="gtBtn" onclick="fireGroundTruth()">▶ Confirmation terrain</button>
+      <button onclick="resetDemo()">↺ Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Quai 404 — prototype hackathon. Données mockées, aucune dépendance.
+   ------------------------------------------------------------------ */
+
+const state = {
+  view:'dest', dest:null, q:'', qg:'', groundTruthFired:false, open:{},
+  couverture:68, signalements:142,
+  report:{step:1, trainId:null, gare:null, touches:0, from:'dest'},
+};
+
+/* Trains en gare de Lausanne.
+   `annonce` = ce qu'affiche le système corrompu.
+   `reel`    = la réalité, connue uniquement du terrain (null = personne ne sait). */
+const trains = [
+  { id:'ic1',  ligne:'IC 1',  voie:3, heure:'08:49', dansMin:0,  devant:true,
+    annonce:'Berne', reel:'Olten',
+    sources:[ {t:'sys', txt:'Système CFF · destination annoncée <b>Berne</b>', unverified:true} ] },
+
+  { id:'ir15', ligne:'IR 15', voie:7, heure:'08:58', dansMin:11,
+    annonce:'Lucerne', reel:'Berne',
+    sources:[
+      {t:'crew', txt:'Chef de train <b>S. Meier</b> a déclaré sa destination', age:240},
+      {t:'pax',  txt:'<b>9 voyageurs</b> à bord confirment la direction Berne', age:95} ] },
+
+  { id:'ic5',  ligne:'IC 5',  voie:4, heure:'09:04', dansMin:17,
+    annonce:'Genève-Aéroport', reel:'Genève',
+    sources:[
+      {t:'crew', txt:'Chef de train <b>A. Rochat</b> : terminus <b>Genève</b>, pas l\'aéroport', age:130},
+      {t:'pax',  txt:'<b>23 voyageurs</b> à bord confirment Genève', age:40},
+      {t:'pax',  txt:'<b>6 voyageurs</b> descendus à Morges confirment le parcours', age:310} ] },
+
+  { id:'ir90', ligne:'IR 90', voie:1, heure:'08:55', dansMin:8,
+    annonce:'Sion', reel:'Sion',
+    sources:[
+      {t:'crew', txt:'Chef de train <b>L. Fournier</b> a déclaré sa destination', age:75} ] },
+
+  { id:'ic6',  ligne:'IC 6',  voie:9, heure:'09:12', dansMin:25,
+    annonce:'Bâle CFF', reel:'Bâle CFF',
+    sources:[
+      {t:'pax',  txt:'<b>11 voyageurs</b> à bord confirment Bâle', age:200} ] },
+
+  { id:'s3',   ligne:'S 3',   voie:2, heure:'08:51', dansMin:4,
+    annonce:'Yverdon-les-Bains', reel:'Palézieux',
+    sources:[
+      {t:'pax',  txt:'<b>7 voyageurs</b> signalent un départ vers <b>Palézieux</b>', age:55},
+      {t:'crew', txt:'Chef de train <b>R. Bolle</b> confirme Palézieux', age:150} ] },
+
+  { id:'re22', ligne:'RE 22', voie:5, heure:'08:52', dansMin:5,
+    annonce:'Fribourg', reel:null,
+    sources:[ {t:'sys', txt:'Système CFF · destination annoncée <b>Fribourg</b>', unverified:true} ] },
+
+  { id:'ic21', ligne:'IC 21', voie:8, heure:'09:20', dansMin:33,
+    annonce:'Lugano', reel:null,
+    sources:[ {t:'sys', txt:'Système CFF · destination annoncée <b>Lugano</b>', unverified:true} ] },
+];
+
+const POPULAIRES = ['Berne','Genève','Zurich HB','Lausanne','Fribourg','Sion'];
+
+const DESTS = [
+  'Berne','Genève','Genève-Aéroport','Zurich HB','Zurich Aéroport','Bâle CFF',
+  'Lucerne','Fribourg','Neuchâtel','Bienne','Olten','Sion','Brigue','Martigny',
+  'Montreux','Vevey','Yverdon-les-Bains','Palézieux','Morges','Nyon','Renens',
+  'Lugano','Bellinzone','Saint-Gall','Winterthour','Delémont','La Chaux-de-Fonds',
+  'Aigle','Payerne','Romont','Interlaken Ost','Thoune','Coire','Zoug','Baden',
+];
+
+/* ---------- confiance ---------- */
+
+/* Poids : une déclaration du personnel de bord vaut deux confirmations voyageur.
+   La donnée système, corrompue, ne compte pour rien. */
+const POIDS = {crew:2, pax:1, sys:0};
+
+function confiance(train){
+  const poids = train.sources.reduce((s, x) => s + POIDS[x.t], 0);
+  if(poids === 0) return 0.31;
+  return Math.min(0.95, 0.52 + 0.13 * poids);
+}
+
+function palier(c){
+  if(c >= 0.85) return {bars:3, col:'#16C784', nom:'Vérifié'};
+  if(c >= 0.60) return {bars:2, col:'#9ED64A', nom:'Probable'};
+  if(c >= 0.35) return {bars:1, col:'#F5A623', nom:'Faible'};
+  return              {bars:0, col:'#6B7488', nom:'Non vérifié'};
+}
+
+/* Icône « barres de réseau » : la fiabilité se lit sans lire le chiffre. */
+function iconeConfiance(c, scale){
+  const p = palier(c), k = scale || 1;
+  const h = [6,10,14];
+  const rects = [0,1,2].map(i =>
+    `<rect x="${i*7}" y="${15-h[i]}" width="5" height="${h[i]}" rx="1.5"
+       fill="${i < p.bars ? p.col : '#2E364B'}"/>`).join('');
+  const cross = p.bars === 0
+    ? `<path d="M1 14 L19 2" stroke="#6B7488" stroke-width="1.6" stroke-linecap="round"/>` : '';
+  return `<svg class="cbars" width="${20*k}" height="${16*k}" viewBox="0 0 20 16">${rects}${cross}</svg>`;
+}
+
+/* ---------- verdict ---------- */
+
+function verdict(train, dest){
+  const conf = confiance(train);
+  const verifie = train.sources.some(s => s.t !== 'sys');
+  if(!verifie || !train.reel) return {k:'unk', conf};
+  /* Sans destination choisie (parcours contributeur direct), le verdict
+     porte sur la fiabilité de l'info, pas sur l'adéquation au trajet. */
+  if(!dest) return {k:'ok', conf};
+  return {k: train.reel === dest ? 'ok' : 'no', conf};
+}
+
+const LABEL = {
+  ok : d => 'VA BIEN À ' + d.toUpperCase(),
+  no : d => 'NE VA PAS À ' + d.toUpperCase(),
+  unk: () => 'NOUS NE SAVONS PAS',
+};
+const ICON = {ok:'✅', no:'⛔', unk:'❓'};
+
+/* ---------- helpers ---------- */
+
+function ago(sec){
+  if(sec == null) return '';
+  if(sec < 45) return "à l'instant";
+  return 'il y a ' + Math.round(sec/60) + ' min';
+}
+function srcIcon(t){ return t === 'crew' ? '🦺' : t === 'pax' ? '👥' : '🖥️'; }
+function esc(s){ return s.replace(/'/g, "\\'"); }
+
+function sourcesHtml(train){
+  return train.sources.map(s => `
+    <div class="src ${s.t === 'sys' ? 'sys' : ''}">
+      <span class="ic">${srcIcon(s.t)}</span>
+      <span class="tx">${s.txt}${s.unverified ? '<span class="badge-unverified">non vérifié</span>' : ''}${s.mine ? '<span class="badge-mine">vous</span>' : ''}</span>
+      <span class="ag">${ago(s.age)}</span>
+    </div>`).join('');
+}
+
+/* ---------- écrans ---------- */
+
+function render(){
+  document.getElementById('screen').innerHTML =
+    ({dest:viewDest, quai:viewQuai, report:viewReport, thanks:viewThanks})[state.view]();
+  syncDock();
+}
+
+function viewDest(){
+  return `
+    <h1>Où allez-vous ?</h1>
+    <p class="sub">Les panneaux et l'app officielle sont actuellement non fiables.
+    Nous vérifions chaque train auprès des personnes qui sont à bord.</p>
+    <div class="search">🔎<input id="q" placeholder="Rechercher une destination…"
+      oninput="filtrer(this.value)" autocomplete="off"></div>
+    <div id="destlist">${destListHtml()}</div>
+
+    <div class="divider">OU</div>
+
+    <div class="dgroup" style="margin-top:0">Confirmation terrain</div>
+    <p class="sub" style="margin-top:-2px">Vous êtes déjà à bord ? Vous savez quelque chose
+    que le système ignore. Un signalement suffit à rendre un train visible pour tous
+    les voyageurs restés sur le quai.</p>
+
+    ${ctaHtml()}
+
+    <div class="stats">
+      <div class="stat"><b>${state.signalements}</b><span>signalements<br>dernière heure</span></div>
+      <div class="stat"><b>${trains.filter(t => t.sources.some(s => s.t !== 'sys')).length}</b><span>trains<br>confirmés</span></div>
+      <div class="stat"><b>${state.couverture} %</b><span>couverture<br>réseau</span></div>
+    </div>`;
+}
+
+/* Point d'entrée contributeur — présent sur l'accueil et sur l'écran quai. */
+function ctaHtml(){
+  return `
+    <button class="cta" onclick="startReport()">
+      <span class="em">🚊</span>
+      <span>
+        <span class="t1">Je suis dans un train en gare</span>
+        <span class="t2">Dites-nous quel train et où il se trouve.
+          <b style="color:#9ED64A">${enAttente()} voyageurs</b> attendent cette info.</span>
+      </span>
+      <span class="arw">→</span>
+    </button>`;
+}
+
+function destListHtml(){
+  const q = state.q.trim().toLowerCase();
+  const liste = q
+    ? DESTS.filter(d => d.toLowerCase().includes(q))
+    : POPULAIRES;
+
+  if(!liste.length) return `<div class="empty">Aucune destination trouvée.</div>`;
+
+  return `<div class="dgroup">${q ? liste.length + ' résultat' + (liste.length>1?'s':'') : 'Destinations fréquentes'}</div>`
+    + liste.map(d => {
+        const dispos = trains.filter(t => t.reel === d).length;
+        return `<button class="drow" onclick="pickDest('${esc(d)}')">${d}
+          <span class="meta">${ dispos
+            ? iconeConfiance(0.9) + dispos + ' train' + (dispos>1?'s':'') + ' confirmé' + (dispos>1?'s':'')
+            : iconeConfiance(0.2) + 'non confirmé' }</span></button>`;
+      }).join('');
+}
+
+function filtrer(v){
+  state.q = v;
+  document.getElementById('destlist').innerHTML = destListHtml();
+}
+
+function viewQuai(){
+  const dest  = state.dest;
+  const front = trains.find(t => t.devant);
+  const v     = verdict(front, dest);
+  const p     = palier(v.conf);
+
+  const autres = trains.filter(t => !t.devant).map(t => ({t, v: verdict(t, dest)}));
+  const best   = autres.filter(o => o.v.k === 'ok').sort((a,b) => b.v.conf - a.v.conf)[0];
+  const reste  = autres.filter(o => !best || o.t.id !== best.t.id)
+                       .sort((a,b) => b.v.conf - a.v.conf);
+
+  return `
+    <div class="loc">📍 <b>Lausanne</b> · voie 3 · vers <b>${dest}</b>
+      <span class="chg" onclick="go('dest')">modifier</span></div>
+
+    <div class="verdict ${v.k}">
+      <div class="vhead">
+        <span>Voie 3 · ${front.ligne} · le train devant vous</span>
+        <span class="countdown" id="cd">PORTES 00:40</span>
+      </div>
+      <div class="vicon">${ICON[v.k]}</div>
+      <div class="vtitle">${LABEL[v.k](dest)}</div>
+
+      ${ v.k === 'unk'
+        ? `<div class="vnote">Aucune confirmation terrain sur ce train depuis 14 minutes.
+             <b style="color:var(--txt)">Nous préférons vous le dire plutôt que de deviner.</b></div>`
+        : `<div class="vreal">Destination réelle : <b>${front.reel}</b></div>` }
+
+      <div class="conf">
+        <div class="confrow">
+          <span class="lbl">Fiabilité</span>
+          <span class="tier">
+            ${iconeConfiance(v.conf)}
+            <span class="tname" style="color:${p.col}">${p.nom}</span>
+            <span class="pct">${Math.round(v.conf*100)} %</span>
+          </span>
+        </div>
+        <div class="bar"><i style="width:${Math.round(v.conf*100)}%;background:${p.col}"></i></div>
+      </div>
+
+      <div class="sources">${sourcesHtml(front)}</div>
+    </div>
+
+    ${ v.k !== 'ok' ? `
+      <div class="sect">Votre meilleure option</div>
+      ${ best ? optRow(best.t, best.v, true)
+              : `<div class="opt"><div class="top"><span class="st">❓</span><div class="bd">
+                   <div class="t1">Aucun train confirmé pour ${dest}</div>
+                   <div class="t2">Nous vous alertons dès qu'une confirmation arrive</div>
+                 </div></div></div>` }` : '' }
+
+    <div class="sect">Autres trains en gare · ${reste.length}</div>
+    ${ reste.map(o => optRow(o.t, o.v, false)).join('') }
+
+    ${ctaHtml()}
+
+    ${legendHtml()}
+
+    <button class="btn ghost" onclick="go('dest')">Changer de destination</button>
+    <p class="sub" style="margin-top:18px;font-size:11.5px;text-align:center">
+      Quai 404 n'affiche jamais une information qu'il ne peut pas sourcer.</p>`;
+}
+
+function optRow(t, v, best){
+  const p = palier(v.conf);
+  const n = t.sources.filter(s => s.t !== 'sys').length;
+  const ouvert = state.open[t.id];
+  return `
+    <div class="opt ${best ? 'best' : ''}" onclick="toggle('${t.id}')">
+      <div class="top">
+        <span class="st">${ICON[v.k]}</span>
+        <div class="bd">
+          <div class="t1">${t.ligne} · voie ${t.voie} → ${t.reel || t.annonce || 'destination inconnue'}
+            ${!t.reel && t.annonce ? '<span style="color:var(--unk)"> (annoncé)</span>' : ''}
+            ${t.fantome ? '<span class="badge-ghost">non planifié</span>' : ''}</div>
+          <div class="t2">
+            ${iconeConfiance(v.conf)}
+            <span class="pct" style="color:${p.col}">${Math.round(v.conf*100)} %</span>
+            <span>·</span>
+            <span>${ n ? n + ' source' + (n>1?'s':'') + ' terrain' : 'donnée système seule' }</span>
+          </div>
+          ${ t.position ? `<div class="posline">📍 signalé à ${t.position}</div>` : '' }
+        </div>
+        <div class="rt">
+          <div class="big">${t.dansMin == null ? 'en gare' : t.dansMin + ' min'}</div>
+          <div class="sm">${t.heure}</div>
+        </div>
+      </div>
+      ${ ouvert ? `<div class="drawer">${sourcesHtml(t)}</div>` : '' }
+    </div>`;
+}
+
+function legendHtml(){
+  return `
+    <div class="legend">
+      <div class="lt">Lire la fiabilité</div>
+      <div class="lr">${iconeConfiance(0.92)}<b style="color:#16C784">Vérifié</b> · ≥ 85 % — plusieurs sources terrain concordantes</div>
+      <div class="lr">${iconeConfiance(0.7)}<b style="color:#9ED64A">Probable</b> · 60–84 % — une source terrain récente</div>
+      <div class="lr">${iconeConfiance(0.45)}<b style="color:#F5A623">Faible</b> · 35–59 % — source ancienne ou isolée</div>
+      <div class="lr">${iconeConfiance(0.2)}<b style="color:#6B7488">Non vérifié</b> · &lt; 35 % — donnée système uniquement</div>
+    </div>`;
+}
+
+/* ==================================================================
+   CONTRIBUTION — « Je suis dans le train XYZ et il est à Genève »
+   L'utilisateur à bord alimente le jeu de données consulté sur le quai.
+   ================================================================== */
+
+function viewReport(){
+  const r = state.report;
+  const jauge = n => `<div class="steps">${[1,2,3].map(i =>
+    `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
+
+  /* --- étape 1 : quel train ? --- */
+  if(r.step === 1){
+    return `
+      <span class="stepno">Étape 1 sur 3</span>${jauge(1)}
+      <h1>Dans quel train<br>êtes-vous ?</h1>
+      <p class="sub">Le numéro est affiché sur la porte et à l'intérieur de la voiture.</p>
+      <div class="pick">
+        ${trains.map(t => `<button onclick="setTrain('${t.id}')">
+            <span>${t.ligne}${t.fantome ? '<span class="badge-ghost">non planifié</span>' : ''}
+              <small style="display:block;margin-top:3px">voie ${t.voie} ·
+              ${t.annonce ? 'annoncé « ' + t.annonce + ' »' : 'aucune annonce'}</small></span>
+            <small>→</small></button>`).join('')}
+      </div>
+
+      <div class="sect">Ce train n'est pas dans la liste</div>
+      <p class="sub" style="margin-top:-4px">Des trains circulent sans être planifiés.
+      Signalez-le : vous serez la seule source d'information à son sujet.</p>
+      <input class="tinput" id="ghost" placeholder="Ex. IC 8, RE 33, S 2…" autocomplete="off">
+      <button class="btn primary" onclick="setGhost()">Déclarer ce train</button>
+      <button class="btn ghost" onclick="cancelReport()">Annuler</button>`;
+  }
+
+  /* --- étape 2 : où est-il ? --- */
+  if(r.step === 2){
+    const t = trainById(r.trainId);
+    return `
+      <span class="stepno">Étape 2 sur 3</span>${jauge(2)}
+      <h1>Où est le<br>${t.ligne} en ce moment ?</h1>
+      <p class="sub">La gare où vous êtes arrêté, ou celle que vous venez de quitter.</p>
+      <div class="search">🔎<input id="q" placeholder="Rechercher une gare…"
+        oninput="filtrerGares(this.value,'setGare')" autocomplete="off"></div>
+      <div id="garelist">${gareListHtml('setGare')}</div>
+      <button class="btn ghost" onclick="backReport()">Retour</button>`;
+  }
+
+  /* --- étape 3 : où va-t-il ? --- */
+  const t = trainById(r.trainId);
+  return `
+    <span class="stepno">Étape 3 sur 3 · facultatif</span>${jauge(3)}
+    <h1>Où va-t-il<br>vraiment ?</h1>
+    <p class="sub">Terminus annoncé à bord par le personnel, ou prochain arrêt que
+    vous avez entendu. Si vous ne savez pas, passez — c'est déjà très utile.</p>
+    <div class="opt" style="cursor:default"><div class="top">
+      <span class="st">🚊</span>
+      <div class="bd">
+        <div class="t1">${t.ligne}</div>
+        <div class="t2">📍 actuellement à <b style="color:#9ED64A">${r.gare}</b></div>
+      </div>
+    </div></div>
+    <div class="search">🔎<input id="q" placeholder="Rechercher un terminus…"
+      oninput="filtrerGares(this.value,'submitReport')" autocomplete="off"></div>
+    <div id="garelist">${gareListHtml('submitReport')}</div>
+    <button class="btn ghost" onclick="submitReport(null)">Je ne sais pas — envoyer quand même</button>`;
+}
+
+function gareListHtml(action){
+  const q = state.qg.trim().toLowerCase();
+  const liste = (q ? DESTS.filter(d => d.toLowerCase().includes(q)) : POPULAIRES);
+  if(!liste.length) return `<div class="empty">Aucune gare trouvée.</div>`;
+  return `<div class="dgroup">${q ? liste.length + ' résultat' + (liste.length>1?'s':'') : 'Gares fréquentes'}</div>`
+    + liste.map(d => `<button class="drow" onclick="${action}('${esc(d)}')">${d}
+        <span class="meta">sélectionner →</span></button>`).join('');
+}
+
+function filtrerGares(v, action){
+  state.qg = v;
+  document.getElementById('garelist').innerHTML = gareListHtml(action);
+}
+
+function viewThanks(){
+  const t = trainById(state.report.trainId);
+  const v = verdict(t, state.dest);
+  const p = palier(v.conf);
+  return `
+    <div style="padding-top:20px">
+      <div style="font-size:42px">🎯</div>
+      <h1 style="margin-top:12px">Merci.</h1>
+      <div class="hero-num">${state.report.touches}</div>
+      <p class="sub">voyageurs viennent de recevoir votre signalement.
+      ${ t.fantome
+        ? `Le <b>${t.ligne}</b> n'existait dans aucun système : <b style="color:#C9A6FF">vous venez de le faire apparaître.</b>`
+        : `La fiabilité du <b>${t.ligne}</b> est passée à
+           <b style="color:${p.col}">${Math.round(v.conf*100)} %</b>.` }</p>
+
+      <div class="sect">Votre contribution</div>
+      ${optRow(t, v, true)}
+
+      <div class="opt" style="cursor:default"><div class="top">
+        <span class="st">📈</span>
+        <div class="bd">
+          <div class="t1">Couverture du réseau</div>
+          <div class="t2">${iconeConfiance(0.9)} ${state.couverture} % des trains actifs
+            ont une confirmation de moins de 10 min</div>
+        </div>
+      </div></div>
+
+      <button class="btn ok" onclick="go('${state.dest ? 'quai' : 'dest'}')">
+        ${state.dest ? 'Revenir au quai' : 'Où allez-vous ?'}</button>
+      <button class="btn ghost" onclick="startReport()">Signaler un autre train</button>
+    </div>`;
+}
+
+/* ---------- actions ---------- */
+
+function go(v){ state.view = v; render(); }
+function pickDest(d){ state.dest = d; state.q = ''; go('quai'); }
+function toggle(id){ state.open[id] = !state.open[id]; render(); }
+function trainById(id){ return trains.find(t => t.id === id); }
+
+/* Nombre de voyageurs en attente d'information sur ce quai — argument
+   d'incitation à contribuer, affiché sur le bouton principal. */
+function enAttente(){
+  return trains.filter(t => !t.sources.some(s => s.t !== 'sys')).length * 17 + 9;
+}
+
+/* --- parcours de signalement --- */
+
+function startReport(){
+  const from = (state.view === 'quai' || state.dest) ? 'quai' : 'dest';
+  state.report = {step:1, trainId:null, gare:null, touches:0, from};
+  state.qg = '';
+  go('report');
+}
+
+function cancelReport(){ go(state.report.from); }
+
+function backReport(){ state.report.step = 1; state.qg = ''; render(); }
+
+function setTrain(id){
+  state.report.trainId = id;
+  state.report.step = 2;
+  state.qg = '';
+  render();
+}
+
+/* Cas « ce train n'est pas dans la liste » : le voyageur fait apparaître
+   un train que le système ne connaît pas (incident 08:47). */
+function setGhost(){
+  const nom = (document.getElementById('ghost').value || '').trim().toUpperCase();
+  if(!nom) return;
+  const t = {
+    id:'g' + Date.now(), ligne:nom, voie:'?', heure:'—', dansMin:null,
+    annonce:null, reel:null, fantome:true, sources:[]
+  };
+  trains.push(t);
+  setTrain(t.id);
+}
+
+function setGare(g){
+  state.report.gare = g;
+  state.report.step = 3;
+  state.qg = '';
+  render();
+}
+
+/* Écriture effective dans le jeu de données partagé. */
+function submitReport(terminus){
+  const r = state.report;
+  const t = trainById(r.trainId);
+
+  t.position = r.gare;
+  t.sources.unshift({
+    t:'pax', age:0, mine:true,
+    txt:`<b>Vous</b> : ce train est à <b>${r.gare}</b>` + (terminus ? ` · terminus <b>${terminus}</b>` : '')
+  });
+
+  /* Un terminus déclaré fait autorité tant que rien ne le contredit. */
+  if(terminus) t.reel = terminus;
+  else if(t.fantome && !t.reel) t.reel = null;
+
+  r.touches = Math.floor(Math.random() * 20) + 12;
+  state.couverture = Math.min(97, state.couverture + 4);
+  state.signalements++;
+  state.open[t.id] = true;
+  go('thanks');
+}
+
+/* L'évènement scénarisé du pitch : la vérité arrive du terrain et fait
+   basculer le train de tête de INCONNU vers un verdict ferme.
+   Réversible, pour pouvoir répéter la démo sans tout réinitialiser. */
+function fireGroundTruth(){
+  const front = trains.find(t => t.devant);
+
+  if(state.groundTruthFired){
+    front.sources = front.sources.filter(s => !s.scenario);
+    state.groundTruthFired = false;
+  } else {
+    front.sources.unshift(
+      {t:'crew', scenario:true, age:0, txt:'Chef de train <b>M. Schneider</b> : ce train est à <b>Olten</b>'},
+      {t:'pax',  scenario:true, age:0, txt:'<b>14 voyageurs</b> à bord signalent Olten'}
+    );
+    state.groundTruthFired = true;
+  }
+
+  /* Le bouton doit être utilisable depuis n'importe quel écran :
+     on amène le présentateur là où l'effet est visible. */
+  if(state.view !== 'quai'){
+    if(!state.dest) state.dest = 'Berne';
+    state.view = 'quai';
+  }
+
+  render();
+  const el = document.querySelector('.verdict');
+  if(el) el.animate([{transform:'scale(1)'},{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:420});
+}
+
+/* Le libellé du bouton reflète l'état réel du scénario. */
+function syncDock(){
+  const b = document.getElementById('gtBtn');
+  if(b) b.textContent = state.groundTruthFired
+    ? '↩ Retirer la confirmation'
+    : '▶ Confirmation terrain';
+}
+
+function resetDemo(){
+  const front = trains.find(t => t.devant);
+  front.sources = front.sources.filter(s => s.t === 'sys');
+  for(let i = trains.length - 1; i >= 0; i--) if(trains[i].fantome) trains.splice(i, 1);
+  trains.forEach(t => {
+    delete t.position;
+    t.sources = t.sources.filter(s => !s.mine);
+  });
+  state.groundTruthFired = false;
+  state.couverture = 68; state.signalements = 142;
+  state.dest = null; state.q = ''; state.qg = ''; state.open = {};
+  state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest'};
+  go('dest');
+}
+
+/* ---------- compte à rebours + vieillissement des sources ---------- */
+
+let portes = 40;
+setInterval(() => {
+  const cd = document.getElementById('cd');
+  if(cd){
+    if(portes > 0) portes--;
+    cd.textContent = 'PORTES ' + String(Math.floor(portes/60)).padStart(2,'0')
+                   + ':' + String(portes % 60).padStart(2,'0');
+  }
+  trains.forEach(t => t.sources.forEach(s => { if(s.age != null) s.age++; }));
+}, 1000);
+
+document.addEventListener('keydown', e => {
+  if(e.target.tagName === 'INPUT') return;
+  if(e.code === 'Space'){ e.preventDefault(); fireGroundTruth(); }
+  if(e.key === 'r' || e.key === 'R') resetDemo();
+});
+
+render();
+</script>
+</body>
+</html>

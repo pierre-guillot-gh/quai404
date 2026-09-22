@@ -56,6 +56,57 @@
   .logo span{color:var(--red)}
   .logo small{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;margin-top:3px}
 
+  /* ---------- bascule de vue ---------- */
+  .modetoggle{
+    flex:0 0 auto;margin:2px 20px 12px;display:flex;gap:3px;
+    background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:3px;
+  }
+  .modetoggle button{
+    flex:1;padding:11px 8px;border:0;border-radius:10px;background:transparent;
+    color:var(--muted);font-family:inherit;font-size:13px;font-weight:800;letter-spacing:-.2px;
+    cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;
+  }
+  .modetoggle button:hover{color:var(--txt)}
+  .modetoggle button.on{background:var(--red);color:#fff}
+  .modetoggle button.agent.on{background:#FFB400;color:#241A00}
+
+  /* ---------- console agent ---------- */
+  .agentbar{
+    display:flex;align-items:center;gap:12px;border:1px solid #5C4410;border-radius:14px;
+    background:linear-gradient(135deg,rgba(255,180,0,.15),transparent);padding:13px;margin-bottom:13px;
+  }
+  .agentbar .av{width:40px;height:40px;border-radius:11px;background:#FFB400;color:#241A00;
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+  .agentbar .nm{font-size:14.5px;font-weight:800;letter-spacing:-.3px}
+  .agentbar .rl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .agentbar .ok{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#241A00;background:#FFB400;border-radius:5px;padding:3px 6px}
+
+  .roles{display:flex;gap:7px;margin-bottom:18px}
+  .roles button{flex:1;padding:10px 6px;border-radius:10px;background:var(--panel);
+    border:1px solid var(--line);color:var(--muted);font-family:inherit;font-size:12px;
+    font-weight:700;cursor:pointer;transition:.15s}
+  .roles button.on{border-color:#FFB400;color:#FFB400;background:rgba(255,180,0,.08)}
+
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px}
+  .q.urgent{border-color:#7A5A10;background:linear-gradient(180deg,rgba(255,180,0,.08),transparent)}
+  .q .qh{display:flex;align-items:center;gap:11px}
+  .q .qt{font-size:15px;font-weight:800;letter-spacing:-.3px;flex:1;min-width:0}
+  .q .qs{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+  .q .wait{font-size:11.5px;color:#FFB400;font-weight:800;margin-top:8px}
+  .qa{display:flex;gap:7px;margin-top:12px}
+  .qa button{flex:1;padding:11px 8px;border-radius:10px;border:0;font-family:inherit;
+    font-size:12.5px;font-weight:800;cursor:pointer;transition:.15s}
+  .qa .decl{background:#FFB400;color:#241A00}
+  .qa .decl:hover{background:#FFC634}
+  .qa .supp{background:transparent;border:1px solid var(--line);color:var(--muted);flex:0 0 auto;padding:11px 13px}
+  .qa .supp:hover{border-color:var(--no);color:var(--no)}
+
+  .badge-cff{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#241A00;background:#FFB400;border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+  .badge-supp{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#FFB3B8;border:1px solid #6B1B1B;background:#2A0B0B;border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+
   /* ---------- scroll area ---------- */
   .screen{flex:1 1 auto;overflow-y:auto;padding:6px 20px 24px;scrollbar-width:none}
   .screen::-webkit-scrollbar{display:none}
@@ -105,6 +156,8 @@
   .verdict.ok{--c:var(--ok);border-color:var(--ok)}
   .verdict.no{--c:var(--no);border-color:var(--no)}
   .verdict.unk{--c:var(--unk);border-color:#4A3A16}
+  .verdict.del{--c:#6B7488;border-color:#3A445E}
+  .verdict.del .vtitle{color:#AAB3C6}
   .verdict > *{position:relative}
 
   .vhead{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700}
@@ -251,8 +304,9 @@
     <div class="statusbar"><span id="clock">08:47</span><span>▮▮▮ ◗ 34%</span></div>
     <div class="crisis"><span class="dot"></span><span>Perturbation majeure · réseau national</span></div>
     <div class="brand">
-      <div class="logo">QUAI <span>404</span><small>La vérité du quai</small></div>
+      <div class="logo">QUAI <span>404</span><small id="tagline">La vérité du quai</small></div>
     </div>
+    <div class="modetoggle" id="modetoggle"></div>
     <div class="screen" id="screen"></div>
   </div>
 
@@ -265,6 +319,10 @@
       <li>Nadia ne monte pas. L'app lui donne la <b>meilleure option confirmée</b> : IR 15, voie 7, <b>91 %</b>. Toucher une ligne déplie ses sources.</li>
       <li><b>« Je suis dans un train en gare »</b> → 3 étapes : quel train, où il est, où il va. L'envoi <b>écrit réellement dans le jeu de données</b> — la fiabilité du train remonte sous les yeux du jury.</li>
     </ol>
+    <h3 style="margin:22px 0 12px">Vue Agent CFF</h3>
+    <p>Basculer en haut sur <b>🦺 Agent CFF</b>. La console montre une <b>file de vérification classée par impact</b> — les trains où le plus de voyageurs attendent, avec la fiabilité la plus basse.</p>
+    <p style="margin-top:10px">Deux gestes d'agent : <b>déclarer la position</b> (sa parole vaut 4 confirmations voyageur → fiabilité à 95 % d'un coup) et <b>⊘ marquer supprimé</b>, l'incident de 08:31 que seul un humain peut trancher.</p>
+    <p style="margin-top:10px">Le sélecteur de rôle bascule entre <b>Chef de train</b> et <b>Agent de gare</b> : même console, même autorité, matricule différent.</p>
     <p style="margin-top:16px"><b>Le coup de grâce :</b> à l'étape 1, choisir « ce train n'est pas dans la liste » et saisir <b>IC 8</b>. Le voyageur fait apparaître un train que <b>plus aucun système ne connaît</b> — c'est l'incident de 08:47 résolu par la foule.</p>
     <p style="margin-top:12px">Essayer aussi <b>Olten</b> (le train devant elle devient ✅) et <b>Delémont</b> (aucun train confirmé → réponse honnête).</p>
     <div class="dock">
@@ -281,9 +339,11 @@
    ------------------------------------------------------------------ */
 
 const state = {
+  mode:'voyageur',                       // 'voyageur' | 'agent'
+  agentNom:'M. Schneider', agentMat:'4471', role:'Chef de train',
   view:'dest', dest:null, q:'', qg:'', groundTruthFired:false, open:{},
-  couverture:68, signalements:142,
-  report:{step:1, trainId:null, gare:null, touches:0, from:'dest'},
+  couverture:68, signalements:142, traitees:0,
+  report:{step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false},
 };
 
 /* Trains en gare de Lausanne.
@@ -344,9 +404,10 @@ const DESTS = [
 
 /* ---------- confiance ---------- */
 
-/* Poids : une déclaration du personnel de bord vaut deux confirmations voyageur.
-   La donnée système, corrompue, ne compte pour rien. */
-const POIDS = {crew:2, pax:1, sys:0};
+/* Poids : un agent CFF authentifié fait autorité à lui seul, une déclaration
+   du personnel de bord vaut deux confirmations voyageur, et la donnée système
+   corrompue ne compte pour rien. */
+const POIDS = {agent:4, crew:2, pax:1, sys:0};
 
 function confiance(train){
   const poids = train.sources.reduce((s, x) => s + POIDS[x.t], 0);
@@ -377,8 +438,12 @@ function iconeConfiance(c, scale){
 
 function verdict(train, dest){
   const conf = confiance(train);
+  if(train.supprime) return {k:'del', conf:Math.max(conf, 0.9)};
   const verifie = train.sources.some(s => s.t !== 'sys');
-  if(!verifie || !train.reel) return {k:'unk', conf};
+  if(!verifie) return {k:'unk', conf};
+  /* Position connue mais destination inconnue : on ne peut pas être fiable
+     sur une question à laquelle personne n'a répondu. */
+  if(!train.reel) return {k:'unk', conf:Math.min(conf, 0.55)};
   /* Sans destination choisie (parcours contributeur direct), le verdict
      porte sur la fiabilité de l'info, pas sur l'adéquation au trajet. */
   if(!dest) return {k:'ok', conf};
@@ -389,8 +454,9 @@ const LABEL = {
   ok : d => 'VA BIEN À ' + d.toUpperCase(),
   no : d => 'NE VA PAS À ' + d.toUpperCase(),
   unk: () => 'NOUS NE SAVONS PAS',
+  del: () => 'CE TRAIN EST SUPPRIMÉ',
 };
-const ICON = {ok:'✅', no:'⛔', unk:'❓'};
+const ICON = {ok:'✅', no:'⛔', unk:'❓', del:'⊘'};
 
 /* ---------- helpers ---------- */
 
@@ -399,14 +465,23 @@ function ago(sec){
   if(sec < 45) return "à l'instant";
   return 'il y a ' + Math.round(sec/60) + ' min';
 }
-function srcIcon(t){ return t === 'crew' ? '🦺' : t === 'pax' ? '👥' : '🖥️'; }
+function srcIcon(t){
+  return t === 'agent' ? '🦺' : t === 'crew' ? '🎫' : t === 'pax' ? '👥' : '🖥️';
+}
+
+/* Nombre de voyageurs en attente d'info sur un train donné — sert à
+   prioriser la file de travail de l'agent par impact réel. */
+function attente(t){
+  const base = {ic1:42, re22:35, ic21:27, s3:23, ir15:18, ic5:14, ir90:11, ic6:9};
+  return base[t.id] != null ? base[t.id] : 8;
+}
 function esc(s){ return s.replace(/'/g, "\\'"); }
 
 function sourcesHtml(train){
   return train.sources.map(s => `
     <div class="src ${s.t === 'sys' ? 'sys' : ''}">
       <span class="ic">${srcIcon(s.t)}</span>
-      <span class="tx">${s.txt}${s.unverified ? '<span class="badge-unverified">non vérifié</span>' : ''}${s.mine ? '<span class="badge-mine">vous</span>' : ''}</span>
+      <span class="tx">${s.txt}${s.unverified ? '<span class="badge-unverified">non vérifié</span>' : ''}${s.t === 'agent' ? '<span class="badge-cff">agent CFF</span>' : s.mine ? '<span class="badge-mine">vous</span>' : ''}</span>
       <span class="ag">${ago(s.age)}</span>
     </div>`).join('');
 }
@@ -415,8 +490,25 @@ function sourcesHtml(train){
 
 function render(){
   document.getElementById('screen').innerHTML =
-    ({dest:viewDest, quai:viewQuai, report:viewReport, thanks:viewThanks})[state.view]();
+    ({dest:viewDest, quai:viewQuai, agent:viewAgent, report:viewReport, thanks:viewThanks})[state.view]();
+  renderToggle();
   syncDock();
+}
+
+/* Bascule Voyageur / Agent CFF — toujours visible, hors zone de défilement. */
+function renderToggle(){
+  document.getElementById('modetoggle').innerHTML = `
+    <button class="${state.mode === 'voyageur' ? 'on' : ''}" onclick="setMode('voyageur')">🧳 Voyageur</button>
+    <button class="agent ${state.mode === 'agent' ? 'on' : ''}" onclick="setMode('agent')">🦺 Agent CFF</button>`;
+  document.getElementById('tagline').textContent =
+    state.mode === 'agent' ? 'Console agent · réseau romand' : 'La vérité du quai';
+}
+
+function setMode(m){
+  if(state.mode === m && state.view !== 'report' && state.view !== 'thanks') return;
+  state.mode = m;
+  state.view = m === 'agent' ? 'agent' : (state.dest ? 'quai' : 'dest');
+  render();
 }
 
 function viewDest(){
@@ -555,7 +647,8 @@ function optRow(t, v, best){
         <div class="bd">
           <div class="t1">${t.ligne} · voie ${t.voie} → ${t.reel || t.annonce || 'destination inconnue'}
             ${!t.reel && t.annonce ? '<span style="color:var(--unk)"> (annoncé)</span>' : ''}
-            ${t.fantome ? '<span class="badge-ghost">non planifié</span>' : ''}</div>
+            ${t.fantome ? '<span class="badge-ghost">non planifié</span>' : ''}
+            ${t.supprime ? '<span class="badge-supp">supprimé</span>' : ''}</div>
           <div class="t2">
             ${iconeConfiance(v.conf)}
             <span class="pct" style="color:${p.col}">${Math.round(v.conf*100)} %</span>
@@ -585,6 +678,95 @@ function legendHtml(){
 }
 
 /* ==================================================================
+   CONSOLE AGENT CFF — chef de train, agent de gare.
+   Même jeu de données que les voyageurs, mais une parole qui fait autorité.
+   ================================================================== */
+
+function viewAgent(){
+  const file = trains
+    .map(t => ({t, c:verdict(t, null).conf, w:attente(t)}))
+    .sort((a,b) => (a.c - b.c) || (b.w - a.w));
+
+  const aFaire = file.filter(x => !x.t.supprime && x.c < 0.85);
+  const faits  = file.filter(x =>  x.t.supprime || x.c >= 0.85);
+  const total  = aFaire.reduce((s,x) => s + x.w, 0);
+
+  return `
+    <div class="agentbar">
+      <span class="av">🦺</span>
+      <span>
+        <div class="nm">${state.agentNom}</div>
+        <div class="rl">${state.role} · matricule ${state.agentMat}</div>
+      </span>
+      <span class="ok">authentifié</span>
+    </div>
+
+    <div class="roles">
+      ${['Chef de train','Agent de gare'].map(r =>
+        `<button class="${state.role === r ? 'on' : ''}" onclick="setRole('${r}')">${r}</button>`).join('')}
+    </div>
+
+    <h1 style="margin-top:0">File de vérification</h1>
+    <p class="sub">Classée par impact : les trains sur lesquels le plus de voyageurs
+    attendent une réponse, et dont la fiabilité est la plus basse.
+    <b style="color:#FFB400">${total} voyageurs</b> dépendent de ces ${aFaire.length} déclarations.</p>
+
+    <div class="stats">
+      <div class="stat"><b>${state.traitees}</b><span>déclarations<br>ce matin</span></div>
+      <div class="stat"><b>${aFaire.length}</b><span>trains<br>à vérifier</span></div>
+      <div class="stat"><b>${state.couverture} %</b><span>couverture<br>réseau</span></div>
+    </div>
+
+    <div class="sect">À vérifier · ${aFaire.length}</div>
+    ${ aFaire.length
+      ? aFaire.map(x => queueRow(x, true)).join('')
+      : `<div class="empty">Tous les trains en gare ont une confirmation fiable. Beau travail.</div>` }
+
+    <button class="cta" onclick="agentGhost()">
+      <span class="em">👻</span>
+      <span>
+        <span class="t1">Déclarer un train non planifié</span>
+        <span class="t2">Un train circule sans exister dans le système ?
+          Vous êtes le seul à pouvoir le rendre visible.</span>
+      </span>
+      <span class="arw">→</span>
+    </button>
+
+    <div class="sect">Traités · ${faits.length}</div>
+    ${ faits.map(x => queueRow(x, false)).join('') }`;
+}
+
+function queueRow(x, urgent){
+  const t = x.t, p = palier(x.c);
+  const n = t.sources.filter(s => s.t !== 'sys').length;
+  return `
+    <div class="q ${urgent ? 'urgent' : ''}">
+      <div class="qh">
+        <span style="font-size:19px">${t.supprime ? '⊘' : '🚆'}</span>
+        <span class="qt">${t.ligne} · voie ${t.voie}
+          ${t.fantome ? '<span class="badge-ghost">non planifié</span>' : ''}
+          ${t.supprime ? '<span class="badge-supp">supprimé</span>' : ''}
+          <div class="qs">
+            ${iconeConfiance(x.c)}
+            <b style="color:${p.col}">${Math.round(x.c*100)} %</b>
+            <span>·</span>
+            <span>${ t.reel ? 'destination ' + t.reel
+                    : t.annonce ? 'annoncé « ' + t.annonce + ' »' : 'destination inconnue' }</span>
+          </div>
+        </span>
+      </div>
+      ${ urgent ? `<div class="wait">⏳ ${x.w} voyageurs attendent une réponse sur ce train</div>` : '' }
+      ${ !t.supprime ? `
+        <div class="qa">
+          <button class="decl" onclick="agentDeclare('${t.id}')">Déclarer sa position</button>
+          <button class="supp" onclick="agentSupprime('${t.id}')" title="Marquer supprimé">⊘</button>
+        </div>` : '' }
+      ${ n ? `<div class="drawer" style="margin-top:12px;border-top:1px solid var(--line);padding-top:11px">
+          ${sourcesHtml(t)}</div>` : '' }
+    </div>`;
+}
+
+/* ==================================================================
    CONTRIBUTION — « Je suis dans le train XYZ et il est à Genève »
    L'utilisateur à bord alimente le jeu de données consulté sur le quai.
    ================================================================== */
@@ -597,7 +779,7 @@ function viewReport(){
   /* --- étape 1 : quel train ? --- */
   if(r.step === 1){
     return `
-      <span class="stepno">Étape 1 sur 3</span>${jauge(1)}
+      <span class="stepno">${r.asAgent ? 'Déclaration agent · ' : ''}Étape 1 sur 3</span>${jauge(1)}
       <h1>Dans quel train<br>êtes-vous ?</h1>
       <p class="sub">Le numéro est affiché sur la porte et à l'intérieur de la voiture.</p>
       <div class="pick">
@@ -667,16 +849,17 @@ function viewThanks(){
   const t = trainById(state.report.trainId);
   const v = verdict(t, state.dest);
   const p = palier(v.conf);
+  const ag = state.report.asAgent;
   return `
     <div style="padding-top:20px">
-      <div style="font-size:42px">🎯</div>
-      <h1 style="margin-top:12px">Merci.</h1>
-      <div class="hero-num">${state.report.touches}</div>
-      <p class="sub">voyageurs viennent de recevoir votre signalement.
+      <div style="font-size:42px">${ag ? '🦺' : '🎯'}</div>
+      <h1 style="margin-top:12px">${ag ? 'Déclaration enregistrée.' : 'Merci.'}</h1>
+      <div class="hero-num" ${ag ? 'style="color:#FFB400"' : ''}>${state.report.touches}</div>
+      <p class="sub">voyageurs viennent de recevoir ${ag ? 'votre déclaration' : 'votre signalement'}.
       ${ t.fantome
         ? `Le <b>${t.ligne}</b> n'existait dans aucun système : <b style="color:#C9A6FF">vous venez de le faire apparaître.</b>`
         : `La fiabilité du <b>${t.ligne}</b> est passée à
-           <b style="color:${p.col}">${Math.round(v.conf*100)} %</b>.` }</p>
+           <b style="color:${p.col}">${Math.round(v.conf*100)} %</b>${ag ? ' — une parole d\'agent fait autorité' : ''}.` }</p>
 
       <div class="sect">Votre contribution</div>
       ${optRow(t, v, true)}
@@ -690,9 +873,12 @@ function viewThanks(){
         </div>
       </div></div>
 
-      <button class="btn ok" onclick="go('${state.dest ? 'quai' : 'dest'}')">
-        ${state.dest ? 'Revenir au quai' : 'Où allez-vous ?'}</button>
-      <button class="btn ghost" onclick="startReport()">Signaler un autre train</button>
+      ${ state.report.asAgent
+        ? `<button class="btn ok" style="background:#FFB400;color:#241A00"
+             onclick="go('agent')">Retour à la file de vérification</button>`
+        : `<button class="btn ok" onclick="go('${state.dest ? 'quai' : 'dest'}')">
+             ${state.dest ? 'Revenir au quai' : 'Où allez-vous ?'}</button>
+           <button class="btn ghost" onclick="startReport()">Signaler un autre train</button>` }
     </div>`;
 }
 
@@ -713,12 +899,48 @@ function enAttente(){
 
 function startReport(){
   const from = (state.view === 'quai' || state.dest) ? 'quai' : 'dest';
-  state.report = {step:1, trainId:null, gare:null, touches:0, from};
+  state.report = {step:1, trainId:null, gare:null, touches:0, from, asAgent:false};
   state.qg = '';
   go('report');
 }
 
 function cancelReport(){ go(state.report.from); }
+
+/* --- actions agent --- */
+
+function setRole(r){
+  state.role = r;
+  state.agentNom = r === 'Agent de gare' ? 'S. Perrin' : 'M. Schneider';
+  state.agentMat = r === 'Agent de gare' ? '2208' : '4471';
+  render();
+}
+
+/* L'agent connaît déjà le train : on entre directement à l'étape 2. */
+function agentDeclare(id){
+  state.report = {step:2, trainId:id, gare:null, touches:0, from:'agent', asAgent:true};
+  state.qg = '';
+  go('report');
+}
+
+function agentGhost(){
+  state.report = {step:1, trainId:null, gare:null, touches:0, from:'agent', asAgent:true};
+  state.qg = '';
+  go('report');
+}
+
+/* Incident 08:31 — « certains trains disparaissent ». Seul un agent peut
+   trancher entre « supprimé » et « simplement invisible du système ». */
+function agentSupprime(id){
+  const t = trainById(id);
+  t.supprime = true;
+  t.sources.unshift({
+    t:'agent', age:0, mine:true,
+    txt:`<b>${state.agentNom}</b> (${state.role}) : ce train est <b>supprimé</b>`
+  });
+  state.signalements++; state.traitees++;
+  state.couverture = Math.min(97, state.couverture + 3);
+  render();
+}
 
 function backReport(){ state.report.step = 1; state.qg = ''; render(); }
 
@@ -755,18 +977,21 @@ function submitReport(terminus){
   const t = trainById(r.trainId);
 
   t.position = r.gare;
-  t.sources.unshift({
-    t:'pax', age:0, mine:true,
-    txt:`<b>Vous</b> : ce train est à <b>${r.gare}</b>` + (terminus ? ` · terminus <b>${terminus}</b>` : '')
-  });
+  t.sources.unshift( r.asAgent
+    ? { t:'agent', age:0, mine:true,
+        txt:`<b>${state.agentNom}</b> (${state.role}) : train à <b>${r.gare}</b>`
+            + (terminus ? ` · terminus <b>${terminus}</b>` : '') }
+    : { t:'pax', age:0, mine:true,
+        txt:`<b>Vous</b> : ce train est à <b>${r.gare}</b>`
+            + (terminus ? ` · terminus <b>${terminus}</b>` : '') });
 
   /* Un terminus déclaré fait autorité tant que rien ne le contredit. */
   if(terminus) t.reel = terminus;
-  else if(t.fantome && !t.reel) t.reel = null;
 
   r.touches = Math.floor(Math.random() * 20) + 12;
-  state.couverture = Math.min(97, state.couverture + 4);
+  state.couverture = Math.min(97, state.couverture + (r.asAgent ? 6 : 4));
   state.signalements++;
+  if(r.asAgent) state.traitees++;
   state.open[t.id] = true;
   go('thanks');
 }
@@ -813,13 +1038,15 @@ function resetDemo(){
   front.sources = front.sources.filter(s => s.t === 'sys');
   for(let i = trains.length - 1; i >= 0; i--) if(trains[i].fantome) trains.splice(i, 1);
   trains.forEach(t => {
-    delete t.position;
+    delete t.position; delete t.supprime;
     t.sources = t.sources.filter(s => !s.mine);
   });
   state.groundTruthFired = false;
-  state.couverture = 68; state.signalements = 142;
+  state.couverture = 68; state.signalements = 142; state.traitees = 0;
+  state.mode = 'voyageur'; state.role = 'Chef de train';
+  state.agentNom = 'M. Schneider'; state.agentMat = '4471';
   state.dest = null; state.q = ''; state.qg = ''; state.open = {};
-  state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest'};
+  state.report = {step:1, trainId:null, gare:null, touches:0, from:'dest', asAgent:false};
   go('dest');
 }
 
